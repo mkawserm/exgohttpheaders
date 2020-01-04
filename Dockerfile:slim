@@ -14,8 +14,11 @@ RUN apk --update add ca-certificates
 FROM scratch as app
 # RUN addgroup -S app && adduser -S app -G app
 # USER app
+
 WORKDIR /app
+EXPOSE 8080
 
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /app/app .
-ENTRYPOINT ["./app"]
+
+ENTRYPOINT ["/app/app"]
