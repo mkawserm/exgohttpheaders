@@ -14,14 +14,14 @@ RUN addgroup -S app && adduser -S app -G app
 # APP
 FROM scratch as app
 
+USER app
+WORKDIR /app
+EXPOSE 8080
+
 # COPY
 COPY --from=certs /etc/passwd /etc/passwd
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+# COPY APP
 COPY --from=builder /app/app .
-
-USER app
-
-WORKDIR /app
-EXPOSE 8080
 
 ENTRYPOINT ["/app/app"]
