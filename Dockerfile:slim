@@ -8,17 +8,20 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOPROXY=https://proxy.golang.org go bu
 
 FROM alpine:latest as certs
 RUN apk --update add ca-certificates
+RUN addgroup -S app && adduser -S app -G app
 
 
 # APP
 FROM scratch as app
-# RUN addgroup -S app && adduser -S app -G app
-# USER app
+
+# COPY
+COPY --from=certs /etc/passwd /etc/passwd
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /app/app .
+
+USER app
 
 WORKDIR /app
 EXPOSE 8080
-
-COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /app/app .
 
 ENTRYPOINT ["/app/app"]
